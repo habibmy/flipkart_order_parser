@@ -2,6 +2,10 @@ from io import BytesIO
 import PyPDF2
 from flask import Flask, render_template, request, redirect, session, make_response, send_file, send_from_directory
 import requests
+import os
+from dotenv import load_dotenv
+load_dotenv()
+WEBHOOK_URL = os.getenv('WEBHOOK_URL')
 
 app = Flask(__name__)
 
@@ -57,14 +61,18 @@ def show_pdf():
             from parser import extract_details_from_pdf
             extracted_data = extract_details_from_pdf(send_data.stream)
 
-            # Send to webhook (replace with your actual endpoint)
+            # Send to webhook (use environment variable for URL)
             try:
                 print(extracted_data)
-                # requests.post(
-                #     "https://your.webhook.url/label", 
-                #     json=extracted_data,
-                #     timeout=3
-                # )
+                response = requests.post(
+                    WEBHOOK_URL, 
+                    json=extracted_data,
+                    timeout=3
+                )
+                if response.status_code == 200:
+                    print("Webhook push successful")
+                else:
+                    print("Webhook push failed with status code:", response.status_code)
             except Exception as e:
                 print("Webhook push failed:", e)
 
