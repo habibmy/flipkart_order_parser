@@ -61,6 +61,10 @@ def show_pdf():
             from parser import extract_details_from_pdf
             extracted_data = extract_details_from_pdf(send_data.stream)
 
+            # Default to failure
+            webhook_status = 'failed'
+
+
             # Send to webhook (use environment variable for URL)
             try:
                 print(extracted_data)
@@ -70,6 +74,7 @@ def show_pdf():
                     timeout=3
                 )
                 if response.status_code == 200:
+                    webhook_status = 'success'
                     print("Webhook push successful")
                 else:
                     print("Webhook push failed with status code:", response.status_code)
@@ -77,8 +82,10 @@ def show_pdf():
                 print("Webhook push failed:", e)
 
             output_filename = send_data.filename +'-output.pdf'
+            response = send_file(outfile,mimetype='application/pdf',download_name=output_filename, as_attachment=True)
 
-            return send_file(outfile,mimetype='application/pdf',download_name=output_filename, as_attachment=True)
+            response.headers['X-Webhook-Status'] = webhook_status
+            return response
 
             # return render_template('pdf.html', result=result)
 
