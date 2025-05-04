@@ -1,0 +1,10 @@
+services:
+  orderparser:
+    image: orderparser:latest
+    container_name: orderparser
+    restart: unless-stopped
+    environment:
+      - FLASK_ENV=${FLASK_ENV}
+      - WEBHOOK_URL=${WEBHOOK_URL}
+    ports:
+      - "5000:5000"
