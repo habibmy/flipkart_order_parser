@@ -67,7 +67,7 @@ def show_pdf():
 
             # Send to webhook (use environment variable for URL)
             try:
-                print(extracted_data)
+                # print(extracted_data)
                 response = requests.post(
                     WEBHOOK_URL, 
                     json=extracted_data,
